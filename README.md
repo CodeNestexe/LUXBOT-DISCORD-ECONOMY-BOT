@@ -112,9 +112,9 @@ To add images in this README, place them in your repo and reference them with ma
 
 Example:
 
-```md
+
 ![Dashboard](./src/assets/screenshots/profile.png)
-```
+
 
 You can also use a simple gallery:
 
