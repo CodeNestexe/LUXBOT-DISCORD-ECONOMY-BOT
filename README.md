@@ -113,7 +113,7 @@ To add images in this README, place them in your repo and reference them with ma
 Example:
 
 ```md
-![Dashboard](assets/screenshots/profile.png)
+![Dashboard](src/assets/screenshots/profile.png)
 ```
 
 You can also use a simple gallery:
@@ -121,7 +121,7 @@ You can also use a simple gallery:
 ```md
 | Bot Home | Economy Menu |
 | --- | --- |
-| ![Home](assets/screenshots/stocks.png) | ![Menu](assets/screenshots/mine.png) |
+| ![Home](src/assets/screenshots/stocks.png) | ![Menu](src/assets/screenshots/mine.png) |
 ```
 
 ## Project Structure
