@@ -121,9 +121,9 @@ MORE THINGS THESE ARE FEW IMAGES THERE ARE MANY MORE THINgs EXPLORE YOURSELF!
 | --- | --- |
 | ![mine](src/assets/screenshots/mine.png) | ![stocks](./src/assets/screenshots/stocks.png) |
 
-| CASINO LB | CHARTS |
+| CASINO LB | CHART |
 | --- | --- |
-| ![casinolb](src/assets/screenshots/casinolb.png) | ![charts](./src/assets/screenshots/charts.png) |
+| ![casinolb](src/assets/screenshots/casinolb.png) | ![chart](./src/assets/screenshots/chart.png) |
 
 | LEVEL | MANA CRYSTAL (2nd currency)|
 | --- | --- |
@@ -158,7 +158,5 @@ src/
 
 Pull requests are welcome. Please keep changes focused and consistent with the existing bot systems.
 
-## License
 
-Add your license here before publishing publicly.
 
