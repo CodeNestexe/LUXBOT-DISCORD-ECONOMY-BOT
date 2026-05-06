@@ -118,11 +118,11 @@ Example:
 
 You can also use a simple gallery:
 
-```md
+
 | Bot Home | Economy Menu |
 | --- | --- |
 | ![Home](src/assets/screenshots/mine.png) | ![Menu](./src/assets/screenshots/mine.png) |
-```
+
 
 ## Project Structure
 
