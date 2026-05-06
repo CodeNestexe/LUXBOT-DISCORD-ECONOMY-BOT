@@ -108,21 +108,31 @@ The bot supports both prefix and slash usage for the core command set.
 
 ## Screenshots
 
-To add images in this README, place them in your repo and reference them with markdown image syntax.
-
-Example:
+PROFILE:
 
 
 ![Dashboard](./src/assets/screenshots/profile.png)
 
 
-You can also use a simple gallery:
+MORE THINGS THESE ARE FEW IMAGES THERE ARE MANY MORE THINgs EXPLORE YOURSELF!
 
 
-| Bot Home | Economy Menu |
+| MINE | STOCKS |
 | --- | --- |
-| ![Home](src/assets/screenshots/mine.png) | ![Menu](./src/assets/screenshots/mine.png) |
+| ![mine](src/assets/screenshots/mine.png) | ![stocks](./src/assets/screenshots/stocks.png) |
 
+| CASINO LB | CHARTS |
+| --- | --- |
+| ![casinolb](src/assets/screenshots/casinolb.png) | ![charts](./src/assets/screenshots/charts.png) |
+
+| LEVEL | MANA CRYSTAL (2nd currency)|
+| --- | --- |
+| ![level](src/assets/screenshots/level.png) | ![manacrystal](./src/assets/screenshots/manacrystal.png) |
+
+
+| SHOP | PORTFOLIO |
+| --- | --- |
+| ![shop](src/assets/screenshots/shop.png) | ![portfolio](./src/assets/screenshots/portfolio.png) |
 
 ## Project Structure
 
