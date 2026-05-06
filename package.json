@@ -1,0 +1,34 @@
+{
+  "name": "luxbot",
+  "version": "1.0.0",
+  "description": "A feature-rich Discord economy bot with gambling, stock trading, casinos, and more",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js --dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "economy",
+    "gambling",
+    "trading",
+    "casino"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.12.2",
+    "canvas": "^3.2.0",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5",
+    "express": "^5.1.0",
+    "mongodb": "^6.7.0",
+    "ms": "^2.1.3",
+    "node-fetch": "^3.3.2",
+    "quickchart-js": "^3.1.3",
+    "sharp": "^0.34.4",
+    "topgg-autoposter": "^2.0.2"
+  }
+}
