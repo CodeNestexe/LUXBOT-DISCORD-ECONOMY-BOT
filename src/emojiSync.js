@@ -64,64 +64,97 @@ async function syncCustomEmojis(client, logger) {
     return { skipped: true, reason: 'disabled' };
   }
 
-  const sourceGuildId = process.env.EMOJI_SOURCE_GUILD_ID || process.env.GUILD_ID;
-  if (!sourceGuildId) {
+  const sourceGuildIds = String(process.env.EMOJI_SOURCE_GUILD_ID || process.env.GUILD_ID || '')
+    .split(',')
+    .map(id => id.trim())
+    .filter(Boolean);
+
+  if (sourceGuildIds.length === 0) {
     if (logger) {
-      logger.warn('SYNC_EMOJI is enabled but EMOJI_SOURCE_GUILD_ID is not set.');
+      logger.warn('SYNC_EMOJI is enabled but EMOJI_SOURCE_GUILD_ID or GUILD_ID is not set.');
     }
     return { skipped: true, reason: 'missing-source' };
   }
 
-  const sourceGuild = await client.guilds.fetch(sourceGuildId).catch(() => null);
-  if (!sourceGuild) {
-    throw new Error(`Emoji source guild not found: ${sourceGuildId}`);
+  const sourceGuilds = [];
+  for (const sourceGuildId of sourceGuildIds) {
+    const sourceGuild = await client.guilds.fetch(sourceGuildId).catch(() => null);
+    if (!sourceGuild) {
+      if (logger) {
+        logger.warn(`Emoji source guild not found: ${sourceGuildId}`);
+      }
+      continue;
+    }
+    sourceGuilds.push(sourceGuild);
+  }
+
+  if (sourceGuilds.length === 0) {
+    throw new Error(`Emoji source guilds not found: ${sourceGuildIds.join(', ')}`);
   }
 
   const usedNames = collectUsedCustomEmojiNames(path.join(__dirname));
-  const sourceEmojis = await sourceGuild.emojis.fetch();
-  const emojisToSync = sourceEmojis.filter(emoji => usedNames.has(emoji.name));
+  const emojisByName = new Map();
 
-  if (logger) {
-    logger.loading(`Syncing ${emojisToSync.size} custom emojis from ${sourceGuild.name}...`);
+  for (const sourceGuild of sourceGuilds) {
+    const sourceEmojis = await sourceGuild.emojis.fetch();
+    for (const emoji of sourceEmojis.values()) {
+      if (!usedNames.has(emoji.name) || emojisByName.has(emoji.name)) {
+        continue;
+      }
+      emojisByName.set(emoji.name, emoji);
+    }
   }
 
-  let syncedCount = 0;
-  let skippedCount = 0;
+  const emojisToSync = Array.from(emojisByName.values());
+  const sourceGuildIdSet = new Set(sourceGuilds.map(guild => guild.id));
+  // Build an in-memory emoji URL cache on the client so the bot can use
+  // emoji images without needing to upload them to each guild.
+  // By default we DO NOT upload into guilds. To enable upload, set
+  // `SYNC_EMOJI_UPLOAD=true` in your .env.
+  client.emojiCache = client.emojiCache || new Map();
+  for (const emoji of emojisToSync) {
+    // Prefer the source emoji CDN URL (format depends on animated)
+    client.emojiCache.set(emoji.name, emoji.url);
+    client.emojiCache.set(String(emoji.id), emoji.url);
+  }
 
+  if (logger) {
+    logger.success(`Emoji cache populated: ${emojisToSync.length} emoji(s) available for use`);
+  }
+
+  const shouldUpload = String(process.env.SYNC_EMOJI_UPLOAD || 'false').toLowerCase() === 'true';
+  if (!shouldUpload) {
+    return { cachedCount: emojisToSync.length };
+  }
+
+  // Optional: upload to guilds if explicitly enabled
+  if (logger) {
+    logger.loading(`Uploading ${emojisToSync.length} emoji(s) to guilds (upload mode enabled)...`);
+  }
+
+  let uploaded = 0;
+  let uploadSkipped = 0;
   for (const guild of client.guilds.cache.values()) {
-    if (guild.id === sourceGuild.id) {
-      continue;
-    }
-
+    if (sourceGuildIdSet.has(guild.id)) continue;
     try {
       await guild.emojis.fetch();
-      for (const emoji of emojisToSync.values()) {
+      for (const emoji of emojisToSync) {
         try {
           const result = await syncEmojiToGuild(emoji, guild, logger);
-          if (result.synced) {
-            syncedCount += 1;
-          } else {
-            skippedCount += 1;
-          }
-        } catch (emojiError) {
-          skippedCount += 1;
-          if (logger) {
-            logger.warn(`Could not sync ${emoji.name} to ${guild.name}: ${emojiError.message}`);
-          }
+          if (result.synced) uploaded++; else uploadSkipped++;
+        } catch (e) {
+          uploadSkipped++;
+          if (logger) logger.warn(`Upload failed ${emoji.name} -> ${guild.name}: ${e.message}`);
         }
       }
-    } catch (guildError) {
-      if (logger) {
-        logger.warn(`Skipping emoji sync for ${guild.name}: ${guildError.message}`);
-      }
+    } catch (e) {
+      if (logger) logger.warn(`Skipping upload for ${guild.name}: ${e.message}`);
     }
   }
 
-  if (logger) {
-    logger.success(`Emoji sync completed: ${syncedCount} synced, ${skippedCount} skipped`);
-  }
+  if (logger) logger.success(`Emoji upload completed: ${uploaded} uploaded, ${uploadSkipped} skipped`);
 
-  return { syncedCount, skippedCount };
+  return { cachedCount: emojisToSync.length, uploaded, uploadSkipped };
 }
 
 module.exports = {
